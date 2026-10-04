@@ -1,0 +1,12 @@
+Debug/
+Release/
+build/
+
+*.o
+*.elf
+*.bin
+*.hex
+*.map
+
+.DS_Store
+Thumbs.db
