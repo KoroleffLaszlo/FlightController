@@ -1,7 +1,7 @@
 #include <write.h>
 #include "stm32h753xx.h"
 
-bool UART_init()
+static bool UART3_Init(void)
 {
 
 
@@ -42,17 +42,27 @@ bool UART_init()
 	RCC->AHB4ENR |= (0x1U << 3);
 	RCC->APB1LENR |= (0x1U << 18);
 
-	// PD8 setup
-	GPIOD->MODER &= ~(0x3U << 16);
-	GPIOD->MODER |= (0x2U << 16);
+	// PD8 PD9 setup
+	GPIOD->MODER &= ~((0x3U << 16) | (0x3U << 18)); // clearing bits
+	GPIOD->MODER |= ((0x2U << 16) | (0x2U << 18));
 
-	// PD9 setup
-	GPIOD->MODER &= ~(0x3U << 18);
-	GPIOD->MODER |= (0x2U << 18);
 
 	// set pins to alternate function registers
 	// high registers from 8-15 so AFR[1]
-	GPIOD->AFR[1] =
-	GPIOD->AFR[1] =
+	GPIOD->AFR[1] = ~((0xFU << 0) | (0xFU << 4));
+	GPIOD->AFR[1] = ((0x7U << 0) | (0x7U << 4));
+
+	// setting TX to push/pull PD8
+	GPIOD->OTYPER = ~(0x1U << 8);
+
+	// setting output speed
+	GPIOD->OSPEEDR = ~((0x3U << 16) | (0x3U << 18));
+	GPIOD->OSPEEDR = ((0x1U << 16) | (0x1U << 18));
+
+	// setting RX to pull-up (high when idle) PD9
+	GPIOD->PUPDR = ~(0x3U << 18);
+	GPIOD->PUPDR = (0x1U << 18);
+
+
 
 }
